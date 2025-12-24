@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import vitamins from '../../assets/Videos/vitamins.mp4'
+import api from '../../Services/api'
 
 const FoodPartnerRegister = () => {
   const navigate = useNavigate();
@@ -44,21 +45,14 @@ const FoodPartnerRegister = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/food-partner/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // UPDATED: Sending 'name' instead of 'partnerName'
-        body: JSON.stringify({
-          name: formData.name,
-          contactName: formData.contactName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          password: formData.password
-        }),
-      });
+     const response = await api.post('/auth/food-partner/register', {
+             name: formData.name,
+             contactName: formData.contactName,
+             email: formData.email,
+             phone: formData.phone,
+             address: formData.address,
+             password: formData.password
+        });
 
       const data = await response.json();
 
@@ -71,8 +65,11 @@ const FoodPartnerRegister = () => {
         setStatus({ loading: false, error: data.message || 'Registration failed' });
       }
 
-    } catch (error) {
-      setStatus({ loading: false, error: 'Network Error: Could not connect to server.' });
+    }
+    catch (error) {
+      
+        const msg = error.response?.data?.message || 'Registration failed';
+        setStatus({ loading: false, error: msg });
     }
   };
 
